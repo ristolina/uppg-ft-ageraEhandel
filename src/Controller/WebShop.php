@@ -24,7 +24,6 @@ class WebShop extends AbstractController
 
         if ($this->products == null) {
             $this->products = $this->ageraEhandel->fetchData();
-            $this->products = $this->CleanArray();
             $this->products = $this->SortArray($sortOrder);
             $categories = $this->returnCategories();
         }
@@ -36,6 +35,7 @@ class WebShop extends AbstractController
 
         ]);
     }
+
     /*
     * Sort array based on SortOrder, returns sorted array.
     */
@@ -58,28 +58,6 @@ class WebShop extends AbstractController
             //$arrayToSort = [$prices, $arrayToSort];
         }
         return $arrayToSort;
-    }
-
-    /*
-    * Clean array and remove entries with insufficient data, returns clean array.
-    * Removes entries without 'artiklar_benamning' or without 'artikelkategorier_id'
-    */
-    private function cleanArray() : array
-    {
-        $arrayToClean = $this->products;
-
-        for ($i=0; $i < count($arrayToClean) ; $i++)
-        {
-            if (!array_key_exists("artiklar_benamning", $arrayToClean[$i]))
-            {
-                unset($arrayToClean[$i]);
-            } elseif (!array_key_exists("artikelkategorier_id", $arrayToClean[$i]))
-            {
-                unset($arrayToClean[$i]);
-            }
-        }
-
-        return $arrayToClean;
     }
 
     /*
