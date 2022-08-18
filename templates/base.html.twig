@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
+        <title>{% block title %}Ehandel{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
         {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
         {% block stylesheets %}
@@ -12,8 +12,69 @@
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }}
         {% endblock %}
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+        <script src="https://kit.fontawesome.com/3ea3aa5e2d.js" crossorigin="anonymous"></script>
+
     </head>
     <body>
-        {% block body %}{% endblock %}
+        <div class="section">
+        <h1 class="has-text-dark title is-3">Visar {{ products|length }} produkter</h1>
+        <form action="{{path(app.request.attributes.get('_route'))}}" method="post">
+            <label class="is-size-4" for="sort">Sortera:</label>
+            <div class="select">
+            <select name="sort" id="sort" >
+              <option value="alfabetiskt">Alfabetiskt</option>
+              <option value="pris-stigande">Pris (stigande)</option>
+              <option value="pris-fallande">Pris (fallande)</option>
+            </select>
+        </div>
+            <input type="submit" value="Sortera" class="button"></input>
+        </form>
+        <div class="section">
+
+            {% for cat in categories %}
+            <div class="section">
+                <h1 class="has-text-dark">{{ cat }} </h1>
+                <div class="column is-flex is-flex-wrap-wrap is-justify-content-space-between">
+                {% for product in products %}
+                    {% if "artikelkategorier_id" in product|keys %}
+                        {% if cat == product["artikelkategorier_id"] %}
+                            <div class="card ml-2 mt-2 is-flex-grow-1">
+                                <div class="card-header">
+                                    <p class="card-header-title">{{product["artiklar_benamning"]}}</p>
+                                </div>
+                                <div class="card-image">
+                                    {% if "alt" in product["bild"]|keys and "url" in product["bild"]|keys %}
+                                        <img alt="{{ product["bild"]["alt"]}}" src="{{ product["bild"]["url"]}}"/>
+                                    {% endif %}
+                                </div>
+                                <div class="card-content">
+                                    <p class="title is-5">Pris (inkl. moms): {{product["pris"] * (1 + product["momssats"] / 100)}} {{ product["valutor_id"] }}</p>
+
+                                <span class="icon-text">I lager:
+                                    {% if product["lagersaldo"] > 0 %}
+                                        <span class="icon">
+                                            <i class="fa-solid fa-check has-text-primary"></i>
+                                        </span>
+                                        {% else %}
+                                        <span class="icon">
+                                            <i class="fa-solid fa-xmark has-text-danger"></i>
+                                        </span>
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                    {% endif %}
+
+                {% endfor %}
+            </div>
+        </div>
+            {% endfor %}
+
+
+
+
     </body>
 </html>
